@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64" role="img" aria-label="Spark Monitor">
+  <rect x="4" y="4" width="56" height="56" rx="14" fill="#1f6feb"/>
+  <path d="M32 15c-3.6 0-6.5 2.9-6.5 6.5v18.9a10.5 10.5 0 1 0 13 0V21.5c0-3.6-2.9-6.5-6.5-6.5z" fill="#ffffff" opacity="0.95"/>
+  <circle cx="32" cy="46.5" r="6.5" fill="#ff6b6b"/>
+  <rect x="30.4" y="25.5" width="3.2" height="17" rx="1.6" fill="#ff6b6b"/>
+</svg>

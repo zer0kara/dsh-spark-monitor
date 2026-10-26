@@ -1,0 +1,10 @@
+# dsh-spark-monitor bundle patch: inserts the Host plugin row.
+#
+# No hosts are listed here on purpose. The plugin assumes no host names of its
+# own, so it stays silent until you configure at least one SSH alias — in your
+# own profile patch (a later `- id: spark-monitor` override) or in the Desktop
+# plugin-manager form. Tiers, interval and timeout fall back to the documented
+# defaults.
+- insert:
+    - id: spark-monitor
+      name: '@zer0kara/dsh-spark-monitor'

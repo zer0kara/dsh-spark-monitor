@@ -1,0 +1,6 @@
+{
+  "meta": {
+    "title": "Spark 节点监控",
+    "description": "1-4 台 DGX Spark 节点的温度、内存与 swap，以及 GPU 时钟档位控制。"
+  }
+}

@@ -1,0 +1,6 @@
+{
+  "meta": {
+    "title": "Spark Monitor",
+    "description": "Temperature, memory and swap for 1-4 DGX Spark nodes, with GPU clock tier control."
+  }
+}

@@ -1,0 +1,61 @@
+{
+  "name": "@zer0kara/dsh-spark-monitor",
+  "version": "1.0.0",
+  "description": "DeepSeek Harness status-bar monitor for 1-4 DGX Spark nodes: temperature, memory and swap sampled over SSH, plus GPU clock tier control.",
+  "type": "module",
+  "license": "MIT",
+  "author": "zer0kara",
+  "keywords": [
+    "dsh-plugin",
+    "deepseek-harness",
+    "dgx-spark",
+    "monitoring",
+    "gpu-clock"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/zer0kara/dsh-spark-monitor.git"
+  },
+  "bugs": {
+    "url": "https://github.com/zer0kara/dsh-spark-monitor/issues"
+  },
+  "homepage": "https://github.com/zer0kara/dsh-spark-monitor#readme",
+  "publishConfig": {
+    "access": "public"
+  },
+  "files": [
+    "index.js",
+    "client.js",
+    "cordis.patch.yml",
+    "locale/*.json",
+    "icon.svg",
+    "README.md",
+    "README.zh-CN.md",
+    "CHANGELOG.md",
+    "LICENSE"
+  ],
+  "exports": {
+    ".": "./index.js",
+    "./client": "./client.js",
+    "./locale/*.json": "./locale/*.json",
+    "./icon": "./icon.svg",
+    "./package.json": "./package.json"
+  },
+  "engines": {
+    "node": ">=20",
+    "dsh": ">=0.2.1-rc.2"
+  },
+  "dependencies": {
+    "@deepseek-ai/schemastery": "~3.18.5"
+  },
+  "dsh": {
+    "bundle": {
+      "patch": "./cordis.patch.yml"
+    },
+    "client": {
+      "platform": "web",
+      "immediately": true,
+      "inject": []
+    }
+  }
+}
