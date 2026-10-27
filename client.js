@@ -195,6 +195,24 @@ window.__ModuleLoader__.load({
       }, detail) : null);
     }
 
+    /**
+     * Turn a failed clock response into a message that names the hosts.
+     * The Host reports per-host failures inside `hosts[]`; reading only a
+     * top-level `error` would leave a bare `HTTP 200` when a node rejects the
+     * tier (for example `GPU requires reset`).
+     */
+    const describeClockFailure = (result, status) => {
+      if (result !== null && typeof result === 'object') {
+        if (typeof result.error === 'string' && result.error !== '') return result.error;
+        const hosts = Array.isArray(result.hosts) ? result.hosts : [];
+        const lines = hosts
+          .filter((host) => host !== null && typeof host === 'object' && typeof host.error === 'string' && host.error !== '')
+          .map((host) => `${host.label ?? host.alias}: ${host.error}`);
+        if (lines.length > 0) return lines.join('\n');
+      }
+      return `HTTP ${String(status)}`;
+    };
+
     /** Clock-tier button: click opens the configured GPU clock tiers. */
     function ClockPill(props) {
       const { t } = props;
@@ -241,7 +259,7 @@ window.__ModuleLoader__.load({
           });
           const result = await response.json();
           if (!response.ok || result === null || result.ok !== true) {
-            throw new Error(result !== null && typeof result.error === 'string' ? result.error : `HTTP ${String(response.status)}`);
+            throw new Error(describeClockFailure(result, response.status));
           }
           setState(result);
           setOpen(false);

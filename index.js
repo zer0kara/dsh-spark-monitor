@@ -414,8 +414,18 @@ export function apply(ctx, config) {
       }
       return { alias: host.alias, label: host.label, ...parseClockProbe(stdout, tiers), error: null };
     }));
-    const ok = results.every((result) => result.error === null && result.tier === tier);
-    return { ok, tiers, tier, hosts: results };
+    // A node can reject the tier (for example `GPU requires reset`), so the
+    // response carries a top-level message naming every failing host. Without
+    // it a caller only sees per-host detail and reports a bare HTTP status.
+    const failures = results.filter((result) => result.error !== null);
+    const mismatched = results.filter((result) => result.error === null && result.tier !== tier);
+    const ok = failures.length === 0 && mismatched.length === 0;
+    const error = failures.length > 0
+      ? failures.map((result) => `${result.label ?? result.alias}: ${result.error}`).join('; ')
+      : mismatched.length > 0
+        ? `tier ${String(tier)} was not recorded on ${mismatched.map((result) => result.label ?? result.alias).join(', ')}`
+        : null;
+    return { ok, tiers, tier, hosts: results, error };
   };
 
   // `rpc.handle` resolves its route owner against the connection service's own
@@ -456,7 +466,7 @@ export function apply(ctx, config) {
               return Response.json({ ok: false, error: `unknown tier ${JSON.stringify(tier)}` }, { status: 400 });
             }
             const result = await applyClockTier(tier);
-            ctx.logger?.info?.(`spark-monitor: clock tier ${String(tier)} ${result.ok ? 'applied' : 'failed'} on ${hosts.map((host) => host.alias).join(', ')}`);
+            ctx.logger?.info?.(`spark-monitor: clock tier ${String(tier)} ${result.ok ? 'applied' : `failed: ${result.error}`}`);
             return Response.json(result);
           }
           return Response.json(await readClockState());

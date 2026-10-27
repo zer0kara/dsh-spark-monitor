@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.0.1
+
+- Report per-host clock failures instead of a bare `HTTP 200`: a node that rejects a tier (for example `GPU requires reset`) now surfaces its own message in the popover, and the Host response carries a top-level `error` naming every failing host.
+
 ## 1.0.0
 
 - Initial open-source release.

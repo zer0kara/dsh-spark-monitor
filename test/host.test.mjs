@@ -288,3 +288,33 @@ test('disposing the plugin withdraws its routes', async () => {
   assert.deepEqual(context.routes, []);
 });
 
+test('a rejected tier names the failing host in the response', async (t) => {
+  setRemoteRunner(async (alias, command) => {
+    if (alias === 'node-2' && command.includes('-lgc')) {
+      return {
+        error: new Error('Command failed: exit 255'),
+        stdout: '',
+        stderr: 'Unable to set GPU locked clocks "(gpuClockMin 0, gpuClockMax 1710)": GPU requires reset',
+      };
+    }
+    return fakeRunner(alias, command);
+  });
+  const context = makeContext();
+  t.after(() => context.dispose());
+  apply(context, { hosts: [{ alias: 'node-1' }, { alias: 'node-2' }], tiers: [1710] });
+  const clockRoute = routeOf(context, '/api/spark-monitor/clock');
+
+  const applied = await (await clockRoute.fetch(new Request('http://probe/x', {
+    method: 'POST',
+    headers: { 'content-type': 'application/json' },
+    body: JSON.stringify({ tier: 1710 }),
+  }))).json();
+
+  assert.equal(applied.ok, false);
+  assert.match(applied.error, /node-2/u);
+  assert.match(applied.error, /GPU requires reset/u);
+  const healthy = applied.hosts.find((host) => host.alias === 'node-1');
+  assert.equal(healthy.error, null);
+  assert.equal(healthy.tier, 1710);
+});
+
